@@ -1,54 +1,45 @@
-import NextLink from "next/link";
-import { Link } from "@nextui-org/link";
-import { Snippet } from "@nextui-org/snippet";
-import { Code } from "@nextui-org/code"
-import { button as buttonStyles } from "@nextui-org/theme";
-import { siteConfig } from "@/config/site";
-import { title, subtitle } from "@/components/primitives";
-import { GithubIcon } from "@/components/icons";
+"use client";
+
+import { Divider } from "@nextui-org/divider";
+import { Button } from "@nextui-org/button";
+import JobCard from "../components/jobcard";
+
+import React, { useState, useEffect } from "react";
+
+import axios from "axios";
 
 export default function Home() {
-	return (
-		<section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-			<div className="inline-block max-w-lg text-center justify-center">
-				<h1 className={title()}>Make&nbsp;</h1>
-				<h1 className={title({ color: "violet" })}>beautiful&nbsp;</h1>
-				<br />
-				<h1 className={title()}>
-					websites regardless of your design experience.
-				</h1>
-				<h2 className={subtitle({ class: "mt-4" })}>
-					Beautiful, fast and modern React UI library.
-				</h2>
-			</div>
+  const [offers, setOffers] = useState([]);
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/offers")
+      .then((response) => {
+        setOffers(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
 
-			<div className="flex gap-3">
-				<Link
-					isExternal
-					as={NextLink}
-					href={siteConfig.links.docs}
-					className={buttonStyles({ color: "primary", radius: "full", variant: "shadow" })}
-				>
-					Documentation
-				</Link>
-				<Link
-					isExternal
-					as={NextLink}
-					className={buttonStyles({ variant: "bordered", radius: "full" })}
-					href={siteConfig.links.github}
-				>
-					<GithubIcon size={20} />
-					GitHub
-				</Link>
-			</div>
-
-			<div className="mt-8">
-				<Snippet hideSymbol hideCopyButton variant="flat">
-					<span>
-						Get started by editing <Code color="primary">app/page.tsx</Code>
-					</span>
-				</Snippet>
-			</div>
-		</section>
-	);
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-2">
+        Trouvez Votre Prochain Job de Développeur en Nouvelle-Calédonie
+      </h1>
+      <p className="text-xl font-light">Dernières offres d'emploi</p>
+      <Divider className="my-4" />
+      <div className="grid grid-cols-3 gap-4">
+		{
+			offers.map(
+				(jobdata, i) => <JobCard key={i} job_data={jobdata} />
+			)
+		}
+      </div>
+      <div className="w-full my-4">
+        <Button variant="light" className="w-full" color="primary">
+          + Plus d'offres d'emploi
+        </Button>
+      </div>
+    </div>
+  );
 }
